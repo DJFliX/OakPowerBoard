@@ -10,6 +10,18 @@
 #include "roboto_thin_20.h"
 #include "images.h"
 
+#define PULSES_PER_KWH 375
+#define WH_PER_PULSE (1000 / PULSES_PER_KWH)
+float consumption_total = 56712.0f;
+char consumption_total_str[10] = "056712.00";
+
+int pulse_count_current_kwh;
+
+float consumption_current = 0.0F;
+char consumption_current_str[6] = "00000";
+
+long time_since_last_pulse = millis();
+
 
 // Initialize the oled display for address 0x3c
 SSD1306   display(0x3c, 0, 2);
@@ -18,27 +30,27 @@ SSD1306Ui ui     ( &display );
 bool draw_totalcount_frame(SSD1306 *display, SSD1306UiState* state, int x, int y) {
   display->setTextAlignment(TEXT_ALIGN_LEFT);
   display->setFont(Roboto_Plain_10);
-  display->drawString(0 + x, 20, "Total:");
+  display->drawString(0 + x, 20, "Total (kWh):");
   display->setFont(Roboto_Thin_Plain_20);
-  display->drawString(0 + x, 32, " 56712.12 KWh");
+  display->drawString(0 + x, 32, consumption_total_str);
   return false;
 }
 
 bool draw_currentconsumption_frame(SSD1306 *display, SSD1306UiState* state, int x, int y) {
   display->setTextAlignment(TEXT_ALIGN_LEFT);
   display->setFont(Roboto_Plain_10);
-  display->drawString(0 + x, 20, "Current:");
+  display->drawString(0 + x, 20, "Current: (W)");
   display->setFont(Roboto_Thin_Plain_20);
-  display->drawString(0 + x, 34, "  6.82 KWh");
+  display->drawString(0 + x, 34, consumption_current_str);
   return false;
 }
 
 bool draw_consumptiontoday_frame(SSD1306 *display, SSD1306UiState* state, int x, int y) {
   display->setTextAlignment(TEXT_ALIGN_LEFT);
   display->setFont(Roboto_Plain_10);
-  display->drawString(0 + x, 20, "Today:");
+  display->drawString(0 + x, 20, "Today: (kWh)");
   display->setFont(Roboto_Thin_Plain_20);
-  display->drawString(0 + x, 34, "  6.82 KWh");
+  display->drawString(0 + x, 34, "  6.82 ");
   return false;
 }
 
@@ -63,7 +75,10 @@ bool (*frames[])(SSD1306 *display, SSD1306UiState* state, int x, int y) = {
 // how many frames are there?
 int frameCount = 3;
 
-bool (*overlays[])(SSD1306 *display, SSD1306UiState* state)             = { msOverlay };
+bool (*overlays[])(SSD1306 *display, SSD1306UiState* state) = { 
+  msOverlay 
+};
+
 int overlaysCount = 1;
 
 bool isConnected = false;
@@ -98,6 +113,18 @@ void setup() {
   pinMode(6, INPUT);//Button pin
 }
 
+float get_consumption_from_time_since_last_pulse(long timeSinceLastPulse) {
+  long time = millis();
+  long interval = time - timeSinceLastPulse;
+  if(interval < 0) {
+    time_since_last_pulse = time;
+    return 0.0F;
+  } else if (interval > 500) {
+    float result = (WH_PER_PULSE * 3.6E6 / interval);
+    return result;
+  }
+}
+
 bool btn_state = false;
 
 void loop() {
@@ -106,9 +133,22 @@ void loop() {
     // You can do some work here
     // Don't do stuff if you are below your
     // time budget.
-    bool curr_btn_state = (digitalRead(6) == HIGH) ? true : false;
+    bool curr_btn_state = (digitalRead(6) == LOW) ? false : true;
     if(curr_btn_state != btn_state) {
-      digitalWrite(1, curr_btn_state ? LOW : HIGH);
+      if(curr_btn_state == true) { //PULSE
+        
+      } else {//PULSE FINISHED
+        pulse_count_current_kwh++;
+        if(pulse_count_current_kwh == PULSES_PER_KWH) {
+          consumption_total++;
+          pulse_count_current_kwh = 0;
+        }
+        consumption_current = get_consumption_from_time_since_last_pulse(time_since_last_pulse);
+        dtostrf(consumption_total + ((pulse_count_current_kwh / PULSES_PER_KWH) * 1.0F), 6, 2, consumption_total_str);
+        dtostrf(consumption_current, 4, 0, consumption_current_str);
+        time_since_last_pulse = millis();
+      }
+      digitalWrite(1, curr_btn_state ? HIGH : LOW);
       btn_state = curr_btn_state;
     }
     delay(remainingTimeBudget);

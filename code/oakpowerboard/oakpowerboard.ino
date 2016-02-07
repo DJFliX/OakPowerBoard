@@ -26,42 +26,12 @@ long time_since_last_pulse = millis();
 SSD1306   display(0x3c, 0, 2);
 SSD1306Ui ui     ( &display );
 
-bool draw_totalcount_frame(SSD1306 *display, SSD1306UiState* state, int x, int y) {
-  display->setTextAlignment(TEXT_ALIGN_LEFT);
-  display->setFont(Roboto_Plain_10);
-  display->drawString(0 + x, 20, "Total (kWh):");
-  display->setFont(Roboto_Thin_Plain_20);
-  display->drawString(0 + x, 32, consumption_total_str);
-  return false;
-}
+bool draw_totalcount_frame(SSD1306 *display, SSD1306UiState* state, int x, int y);
+bool draw_currentconsumption_frame(SSD1306 *display, SSD1306UiState* state, int x, int y);
+bool draw_consumptiontoday_frame(SSD1306 *display, SSD1306UiState* state, int x, int y);
 
-bool draw_currentconsumption_frame(SSD1306 *display, SSD1306UiState* state, int x, int y) {
-  display->setTextAlignment(TEXT_ALIGN_LEFT);
-  display->setFont(Roboto_Plain_10);
-  display->drawString(0 + x, 20, "Current: (W)");
-  display->setFont(Roboto_Thin_Plain_20);
-  display->drawString(0 + x, 34, consumption_current_str);
-  return false;
-}
-
-bool draw_consumptiontoday_frame(SSD1306 *display, SSD1306UiState* state, int x, int y) {
-  display->setTextAlignment(TEXT_ALIGN_LEFT);
-  display->setFont(Roboto_Plain_10);
-  display->drawString(0 + x, 20, "Today: (kWh)");
-  display->setFont(Roboto_Thin_Plain_20);
-  display->drawString(0 + x, 34, "  6.82 ");
-  return false;
-}
-
-bool msOverlay(SSD1306 *display, SSD1306UiState* state) {
-  display->drawXbm(32, 0, 8, 8, wifiActive);
-  display->setTextAlignment(TEXT_ALIGN_LEFT);
-  display->setFont(ArialMT_Plain_10);
-  display->drawString(0, 0, String("20:41")); //This should be the current time
-  display->setTextAlignment(TEXT_ALIGN_RIGHT);
-  display->drawString(128, 0, String(millis()));
-  return true;
-}
+bool msOverlay(SSD1306 *display, SSD1306UiState* state);
+float get_consumption_from_time_since_last_pulse(long timeSinceLastPulse);
 
 // this array keeps function pointers to all frames
 // frames are the single views that slide from right to left
@@ -112,17 +82,6 @@ void setup() {
   pinMode(6, INPUT);//Button pin
 }
 
-float get_consumption_from_time_since_last_pulse(long timeSinceLastPulse) {
-  long time = millis();
-  long dsecs = (time - timeSinceLastPulse) / 100;
-  if(dsecs < 5) { //5 dsecs = 0.5 sec: the highest supported interval for this sketch.
-    time_since_last_pulse = time;
-    return 0.0F;
-  }
-  float result = (WH_PER_PULSE / (dsecs / 36000.0F));
-  return result;
-}
-
 bool btn_state = false;
 
 void loop() {
@@ -151,5 +110,51 @@ void loop() {
   }
 }
 
+bool draw_totalcount_frame(SSD1306 *display, SSD1306UiState* state, int x, int y) {
+  display->setTextAlignment(TEXT_ALIGN_LEFT);
+  display->setFont(Roboto_Plain_10);
+  display->drawString(0 + x, 20, "Total (kWh):");
+  display->setFont(Roboto_Thin_Plain_20);
+  display->drawString(0 + x, 32, consumption_total_str);
+  return false;
+}
 
+bool draw_currentconsumption_frame(SSD1306 *display, SSD1306UiState* state, int x, int y) {
+  display->setTextAlignment(TEXT_ALIGN_LEFT);
+  display->setFont(Roboto_Plain_10);
+  display->drawString(0 + x, 20, "Current: (W)");
+  display->setFont(Roboto_Thin_Plain_20);
+  display->drawString(0 + x, 34, consumption_current_str);
+  return false;
+}
+
+bool draw_consumptiontoday_frame(SSD1306 *display, SSD1306UiState* state, int x, int y) {
+  display->setTextAlignment(TEXT_ALIGN_LEFT);
+  display->setFont(Roboto_Plain_10);
+  display->drawString(0 + x, 20, "Today: (kWh)");
+  display->setFont(Roboto_Thin_Plain_20);
+  display->drawString(0 + x, 34, "  6.82 ");
+  return false;
+}
+
+bool msOverlay(SSD1306 *display, SSD1306UiState* state) {
+  display->drawXbm(32, 0, 8, 8, wifiActive);
+  display->setTextAlignment(TEXT_ALIGN_LEFT);
+  display->setFont(ArialMT_Plain_10);
+  display->drawString(0, 0, String("20:41")); //This should be the current time
+  display->setTextAlignment(TEXT_ALIGN_RIGHT);
+  display->drawString(128, 0, String(millis()));
+  return true;
+}
+
+float get_consumption_from_time_since_last_pulse(long timeSinceLastPulse) {
+  long time = millis();
+  long dsecs = (time - timeSinceLastPulse) / 100;
+  if(dsecs < 5) { //5 dsecs = 0.5 sec: the highest supported interval for this sketch.
+    time_since_last_pulse = time;
+    return 0.0F;
+  }
+  float result = (WH_PER_PULSE / (dsecs / 36000.0F));
+  return result;
+}
 

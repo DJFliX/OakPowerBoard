@@ -106,7 +106,8 @@ void loop() {
       digitalWrite(1, curr_btn_state ? HIGH : LOW);
       btn_state = curr_btn_state;
     }
-    delay(remainingTimeBudget);
+    //if(millis() < deadline)
+    //  Particle.delay(millis() - deadline);
   }
 }
 

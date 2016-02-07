@@ -1,5 +1,4 @@
 #include <Wire.h>
-
 //https://github.com/squix78/esp8266-oled-ssd1306
 #include "SSD1306.h"
 #include "SSD1306Ui.h"
@@ -11,17 +10,17 @@
 #include "images.h"
 
 #define PULSES_PER_KWH 375
-#define WH_PER_PULSE (1000 / PULSES_PER_KWH)
-float consumption_total = 56712.0f;
-char consumption_total_str[10] = "056712.00";
+#define WH_PER_PULSE (1000.0F / PULSES_PER_KWH)
 
 int pulse_count_current_kwh;
+
+float consumption_total = 56712.0f;
+char consumption_total_str[10] = "56712.00";
 
 float consumption_current = 0.0F;
 char consumption_current_str[6] = "00000";
 
 long time_since_last_pulse = millis();
-
 
 // Initialize the oled display for address 0x3c
 SSD1306   display(0x3c, 0, 2);
@@ -115,14 +114,13 @@ void setup() {
 
 float get_consumption_from_time_since_last_pulse(long timeSinceLastPulse) {
   long time = millis();
-  long interval = time - timeSinceLastPulse;
-  if(interval < 0) {
+  long dsecs = (time - timeSinceLastPulse) / 100;
+  if(dsecs < 5) { //5 dsecs = 0.5 sec: the highest supported interval for this sketch.
     time_since_last_pulse = time;
     return 0.0F;
-  } else if (interval > 500) {
-    float result = (WH_PER_PULSE * 3.6E6 / interval);
-    return result;
   }
+  float result = (WH_PER_PULSE / (dsecs / 36000.0F));
+  return result;
 }
 
 bool btn_state = false;

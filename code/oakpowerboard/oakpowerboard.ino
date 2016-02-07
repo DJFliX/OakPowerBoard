@@ -142,7 +142,7 @@ void loop() {
           pulse_count_current_kwh = 0;
         }
         consumption_current = get_consumption_from_time_since_last_pulse(time_since_last_pulse);
-        dtostrf(consumption_total + ((pulse_count_current_kwh / PULSES_PER_KWH) * 1.0F), 6, 2, consumption_total_str);
+        dtostrf(consumption_total + ((((float)pulse_count_current_kwh) * WH_PER_PULSE) / 1000.0F), 6, 2, consumption_total_str);
         dtostrf(consumption_current, 4, 0, consumption_current_str);
         time_since_last_pulse = millis();
       }

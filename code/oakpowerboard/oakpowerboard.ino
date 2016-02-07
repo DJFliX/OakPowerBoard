@@ -133,9 +133,7 @@ void loop() {
     // time budget.
     bool curr_btn_state = (digitalRead(6) == LOW) ? false : true;
     if(curr_btn_state != btn_state) {
-      if(curr_btn_state == true) { //PULSE
-        
-      } else {//PULSE FINISHED
+      if(curr_btn_state == false) {//PULSE FINISHED
         pulse_count_current_kwh++;
         if(pulse_count_current_kwh == PULSES_PER_KWH) {
           consumption_total++;

@@ -26,29 +26,23 @@ long time_since_last_pulse = millis();
 SSD1306   display(0x3c, 0, 2);
 SSD1306Ui ui     ( &display );
 
+/* Drawing Resources */
 bool draw_totalcount_frame(SSD1306 *display, SSD1306UiState* state, int x, int y);
 bool draw_currentconsumption_frame(SSD1306 *display, SSD1306UiState* state, int x, int y);
-bool draw_consumptiontoday_frame(SSD1306 *display, SSD1306UiState* state, int x, int y);
-
 bool msOverlay(SSD1306 *display, SSD1306UiState* state);
+
 float get_consumption_from_time_since_last_pulse(long timeSinceLastPulse);
 
 // this array keeps function pointers to all frames
 // frames are the single views that slide from right to left
 bool (*frames[])(SSD1306 *display, SSD1306UiState* state, int x, int y) = { 
   draw_totalcount_frame, 
-  draw_currentconsumption_frame, 
-  draw_consumptiontoday_frame 
+  draw_currentconsumption_frame
 };
-
-// how many frames are there?
-int frameCount = 3;
 
 bool (*overlays[])(SSD1306 *display, SSD1306UiState* state) = { 
   msOverlay 
 };
-
-int overlaysCount = 1;
 
 bool isConnected = false;
 
@@ -129,22 +123,13 @@ bool draw_currentconsumption_frame(SSD1306 *display, SSD1306UiState* state, int 
   return false;
 }
 
-bool draw_consumptiontoday_frame(SSD1306 *display, SSD1306UiState* state, int x, int y) {
+bool msOverlay(SSD1306 *display, SSD1306UiState* state) {
+  //display->drawXbm(32, 0, 8, 8, wifiActive);
   display->setTextAlignment(TEXT_ALIGN_LEFT);
   display->setFont(Roboto_Plain_10);
-  display->drawString(0 + x, 20, "Today: (kWh)");
-  display->setFont(Roboto_Thin_Plain_20);
-  display->drawString(0 + x, 34, "  6.82 ");
-  return false;
-}
-
-bool msOverlay(SSD1306 *display, SSD1306UiState* state) {
-  display->drawXbm(32, 0, 8, 8, wifiActive);
-  display->setTextAlignment(TEXT_ALIGN_LEFT);
-  display->setFont(ArialMT_Plain_10);
   display->drawString(0, 0, String("20:41")); //This should be the current time
-  display->setTextAlignment(TEXT_ALIGN_RIGHT);
-  display->drawString(128, 0, String(millis()));
+  //display->setTextAlignment(TEXT_ALIGN_RIGHT);
+  //display->drawString(128, 0, String(millis()));
   return true;
 }
 

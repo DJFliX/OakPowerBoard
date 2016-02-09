@@ -153,6 +153,7 @@ void loop() {
         dtostrf(consumption_total + ((((float)pulse_count_current_kwh) * WH_PER_PULSE) / 1000.0F), 6, 2, consumption_total_str);
         dtostrf(consumption_current, 4, 0, consumption_current_str);
         time_since_last_pulse = millis();
+        pulse_triggered = false;
     }
     
     digitalWrite(DEBUG_LED, millis() < deadline ? HIGH : LOW);

@@ -5,18 +5,18 @@ A Power Consumption board using the TCRT5000 to count pulses. The board is inten
 Great question, I've made screenshots of the board I sent to OSH-Park:
 ![Image of board](https://cdn.rawgit.com/DJFliX/OakPowerBoard/master/images/board.png)
 
-##Does it even work?
-I don't know. I'm gonna find out as soon as my boards arrive :).
-
-##Where's the code?
-I've made some progress on the code, but unfortunately to test the real sensor I'll have to wait until the board from oshpark arrive. For now, I'm simulating the pulse meter with a button.
+##Is the code finished?
+I've made some progress on the code, but unfortunately to test the real sensor I'll have to wait until the board from oshpark arrive. For now, I'm simulating the pulse meter with a button. Below you can find a list of features that are already implemented as well as features that will be implemented in the near future.
 
 ![Image of firmware running on the Oak](https://cdn.rawgit.com/DJFliX/OakPowerBoard/master/images/DSC_1045.JPG)
 
-Next on my to-do list are:
-- [ ] Show (& calc) total consumption
+Done:
+- [X] Show (& calc) total consumption
+- [X] Use interrupts to get button input + pulses
+- [X] Use button input to switch between frames
 
 Future wishes:
+- [ ] Persistant storage of KWh counter
 - [ ] Add NTP time to sketch
 - [ ] Implement timezone offset, apply to current time
 - [ ] Keep track of total consumption for the day (and display this)
@@ -24,6 +24,9 @@ Future wishes:
 - [ ] Set counter starting position
 - [ ] Send consumption to some kind of server?
 - [ ] Calibration of pulse detection?
+- [ ] Multi-SSID
+- [ ] Store measurements while there is no Wi-Fi connection
+- [ ] Work stand-alone (without Wi-Fi connection) without switching to Config mode
 
 ##Resources used
 * [SparkFun Eagle Libraries](https://github.com/sparkfun/SparkFun-Eagle-Libraries) by [SparkFun](https://github.com/sparkfun)

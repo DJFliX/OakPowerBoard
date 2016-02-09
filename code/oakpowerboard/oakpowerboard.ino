@@ -60,10 +60,10 @@ void setup() {
   ui.setFrameAnimation(SLIDE_LEFT);
 
   // Add frames
-  ui.setFrames(frames, frameCount);
+  ui.setFrames(frames, 2);
 
   // Add overlays
-  ui.setOverlays(overlays, overlaysCount);
+  ui.setOverlays(overlays, 1);
 
   // Inital UI takes care of initalising the display too.
   ui.init();

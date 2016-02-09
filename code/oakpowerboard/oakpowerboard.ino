@@ -12,6 +12,13 @@
 #define PULSES_PER_KWH 375
 #define WH_PER_PULSE (1000.0F / PULSES_PER_KWH)
 
+#define BTN_1 9
+#define BTN_2 8
+#define BTN_3 7
+#define BTN_4 6
+#define PULSE_PIN 5
+#define DEBUG_LED 10
+
 int pulse_count_current_kwh;
 
 float consumption_total = 56712.0f;
@@ -46,6 +53,32 @@ bool (*overlays[])(SSD1306 *display, SSD1306UiState* state) = {
 
 bool isConnected = false;
 
+bool b1_pressed = false;
+bool b2_pressed = false;
+bool b3_pressed = false;
+bool b4_pressed = false;
+bool pulse_triggered = false;
+
+void toggle_b1() {
+  b1_pressed = true;
+}
+
+void toggle_b2() {
+  b2_pressed = true;
+}
+
+void toggle_b3() {
+  b3_pressed = true;
+}
+
+void toggle_b4() {
+  b4_pressed = true;
+}
+
+void trigger_pulse() {
+  pulse_triggered = true;
+}
+
 void setup() {
   ui.setTargetFPS(30);
   ui.setActiveSymbole(activeSymbole);
@@ -73,20 +106,43 @@ void setup() {
   // put your setup code here, to run once:
   // initialize the digital pin as an output.
   pinMode(1, OUTPUT); //LED on Model A   
-  pinMode(6, INPUT);//Button pin
+  attachInterrupt(digitalPinToInterrupt(PULSE_PIN), trigger_pulse, FALLING);
+  pinMode(DEBUG_LED, OUTPUT);//Debugging LED
+  attachInterrupt(digitalPinToInterrupt(BTN_1), toggle_b1, FALLING);
+  attachInterrupt(digitalPinToInterrupt(BTN_2), toggle_b2, FALLING);
+  attachInterrupt(digitalPinToInterrupt(BTN_3), toggle_b3, FALLING);
+  attachInterrupt(digitalPinToInterrupt(BTN_4), toggle_b4, FALLING);
 }
 
 bool btn_state = false;
 
 void loop() {
   int remainingTimeBudget = ui.update();
+  yield();
+  long deadline = millis() + remainingTimeBudget;
   if (remainingTimeBudget > 0) {
-    // You can do some work here
-    // Don't do stuff if you are below your
-    // time budget.
-    bool curr_btn_state = (digitalRead(6) == LOW) ? false : true;
-    if(curr_btn_state != btn_state) {
-      if(curr_btn_state == false) {//PULSE FINISHED
+    
+    if(b1_pressed == true) {
+      ui.nextFrame();
+      b1_pressed = false;
+    }
+    
+    if(b2_pressed == true) {
+      ui.previousFrame();
+      b2_pressed = false;
+    }
+    
+    if(b3_pressed == true) {
+      //handle b3
+      b3_pressed = false;
+    }
+    
+    if(b4_pressed = true) {
+      //handle b4
+      b4_pressed = false;
+    }
+    
+    if(pulse_triggered == true) {
         pulse_count_current_kwh++;
         if(pulse_count_current_kwh == PULSES_PER_KWH) {
           consumption_total++;
@@ -96,11 +152,9 @@ void loop() {
         dtostrf(consumption_total + ((((float)pulse_count_current_kwh) * WH_PER_PULSE) / 1000.0F), 6, 2, consumption_total_str);
         dtostrf(consumption_current, 4, 0, consumption_current_str);
         time_since_last_pulse = millis();
-      }
-      digitalWrite(1, curr_btn_state ? HIGH : LOW);
-      btn_state = curr_btn_state;
     }
-    //if(millis() < deadline)
+    
+    digitalWrite(DEBUG_LED, millis() < deadline ? HIGH : LOW);
     //  Particle.delay(millis() - deadline);
   }
 }

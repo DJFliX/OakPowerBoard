@@ -92,6 +92,7 @@ void setup() {
   // SLIDE_LEFT, SLIDE_RIGHT, SLIDE_TOP, SLIDE_DOWN
   ui.setFrameAnimation(SLIDE_LEFT);
 
+  ui.setTimePerFrame(7000);
   // Add frames
   ui.setFrames(frames, 2);
 

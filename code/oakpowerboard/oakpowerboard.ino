@@ -119,10 +119,10 @@ bool btn_state = false;
 
 void loop() {
   int remainingTimeBudget = ui.update();
-  yield();
   long deadline = millis() + remainingTimeBudget;
+  
   if (remainingTimeBudget > 0) {
-    
+    yield();
     if(b1_pressed == true) {
       ui.nextFrame();
       b1_pressed = false;

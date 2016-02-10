@@ -14,9 +14,9 @@ Done:
 - [X] Show (& calc) total consumption
 - [X] Use interrupts to get button input + pulses
 - [X] Use button input to switch between frames
+- [X] Persistent storage of KWh counter
 
 Future wishes:
-- [ ] Persistant storage of KWh counter
 - [ ] Add NTP time to sketch
 - [ ] Implement timezone offset, apply to current time
 - [ ] Keep track of total consumption for the day (and display this)
@@ -27,12 +27,14 @@ Future wishes:
 - [ ] Multi-SSID
 - [ ] Store measurements while there is no Wi-Fi connection
 - [ ] Work stand-alone (without Wi-Fi connection) without switching to Config mode
+- [ ] Reduce Flash memory wear by writing periodically instead of on every KWh increment
 
 ##Resources used
 * [SparkFun Eagle Libraries](https://github.com/sparkfun/SparkFun-Eagle-Libraries) by [SparkFun](https://github.com/sparkfun)
 * [TCRT5000 Eagle Library](https://github.com/mohamedpsx/Eagle-Libraries) by [mohamedpsx](https://github.com/mohamedpsx)
 
 * [esp8266-oled-ssd1306](https://github.com/squix78/esp8266-oled-ssd1306) by [squix78](https://github.com/squix78))
+* [EEPROMWriteAnything](http://playground.arduino.cc/Code/EEPROMWriteAnything) by the Arduino Community
 
 * [AirSensor Energy Monitor tutorial](http://www.airsensor.co.uk/component/zoo/item/energy-monitor.html)
 * [nongnu.org dtostrf](http://www.nongnu.org/avr-libc/user-manual/group__avr__stdlib.html#ga060c998e77fb5fc0d3168b3ce8771d42)

@@ -9,8 +9,19 @@
 #include "font/roboto_thin_20.h"
 #include "images.h"
 
+#include <EEPROM.h>
+
+#include "eepromanything.h"
+
 #define PULSES_PER_KWH 375
 #define WH_PER_PULSE (1000.0F / PULSES_PER_KWH)
+
+struct config_t
+{
+  int state;
+  float consumption_total;
+  int pulse_count_current_kwh;
+} storage;
 
 #define BTN_1 9
 #define BTN_2 8
@@ -19,13 +30,12 @@
 #define PULSE_PIN 5
 #define DEBUG_LED 10
 
-int pulse_count_current_kwh;
+#define EEPROM_READ_ADDR 0
 
-float consumption_total = 56712.0f;
-char consumption_total_str[10] = "56712.00";
+char consumption_total_str[10] = "00000.00";
 
 float consumption_current = 0.0F;
-char consumption_current_str[6] = "00000";
+char consumption_current_str[6] = "Wait";
 
 long time_since_last_pulse = millis();
 
@@ -80,6 +90,15 @@ void trigger_pulse() {
 }
 
 void setup() {
+  EEPROM_readAnything(EEPROM_READ_ADDR, storage);
+  if(storage.state != 0xF7) {
+    storage.state = 0xF7;
+    storage.consumption_total = 56712.0f;
+    storage.pulse_count_current_kwh = 0;
+    EEPROM_writeAnything(EEPROM_READ_ADDR, storage);
+  }
+  dtostrf(storage.consumption_total, 6, 2, consumption_total_str);
+
   ui.setTargetFPS(30);
   ui.setActiveSymbole(activeSymbole);
   ui.setInactiveSymbole(inactiveSymbole);
@@ -115,8 +134,6 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(BTN_4), toggle_b4, FALLING);
 }
 
-bool btn_state = false;
-
 void loop() {
   int remainingTimeBudget = ui.update();
   long deadline = millis() + remainingTimeBudget;
@@ -144,13 +161,14 @@ void loop() {
     }
     
     if(pulse_triggered == true) {
-        pulse_count_current_kwh++;
-        if(pulse_count_current_kwh == PULSES_PER_KWH) {
-          consumption_total++;
-          pulse_count_current_kwh = 0;
+        storage.pulse_count_current_kwh++;
+        if(storage.pulse_count_current_kwh == PULSES_PER_KWH) {
+          storage.consumption_total++;
+          storage.pulse_count_current_kwh = 0;
+          EEPROM_writeAnything(EEPROM_READ_ADDR, storage);
         }
         consumption_current = get_consumption_from_time_since_last_pulse(time_since_last_pulse);
-        dtostrf(consumption_total + ((((float)pulse_count_current_kwh) * WH_PER_PULSE) / 1000.0F), 6, 2, consumption_total_str);
+        dtostrf(storage.consumption_total + ((((float)storage.pulse_count_current_kwh) * WH_PER_PULSE) / 1000.0F), 6, 2, consumption_total_str);
         dtostrf(consumption_current, 4, 0, consumption_current_str);
         time_since_last_pulse = millis();
         pulse_triggered = false;

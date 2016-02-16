@@ -1,4 +1,6 @@
 #include <Wire.h>
+#include <EEPROM.h>
+
 //https://github.com/squix78/esp8266-oled-ssd1306
 #include "SSD1306.h"
 #include "SSD1306Ui.h"
@@ -9,7 +11,6 @@
 #include "roboto_thin_20.h"
 #include "images.h"
 
-#include <EEPROM.h>
 
 #include "eepromanything.h"
 

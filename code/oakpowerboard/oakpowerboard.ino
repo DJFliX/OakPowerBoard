@@ -4,9 +4,9 @@
 #include "SSD1306Ui.h"
 
 //Resources included with the sketch
-#include "font/roboto_10.h"
-#include "font/roboto_12.h"
-#include "font/roboto_thin_20.h"
+#include "roboto_10.h"
+#include "roboto_12.h"
+#include "roboto_thin_20.h"
 #include "images.h"
 
 #include <EEPROM.h>

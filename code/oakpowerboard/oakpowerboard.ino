@@ -144,21 +144,25 @@ void loop() {
     if(b1_pressed == true) {
       ui.nextFrame();
       b1_pressed = false;
+      yield();
     }
     
     if(b2_pressed == true) {
       ui.previousFrame();
       b2_pressed = false;
+      yield();
     }
     
     if(b3_pressed == true) {
       //handle b3
       b3_pressed = false;
+      yield();
     }
     
     if(b4_pressed = true) {
       //handle b4
       b4_pressed = false;
+      yield();
     }
     
     if(pulse_triggered == true) {
@@ -168,15 +172,18 @@ void loop() {
           storage.pulse_count_current_kwh = 0;
           EEPROM_writeAnything(EEPROM_READ_ADDR, storage);
         }
+        yield();
         consumption_current = get_consumption_from_time_since_last_pulse(time_since_last_pulse);
         dtostrf(storage.consumption_total + ((((float)storage.pulse_count_current_kwh) * WH_PER_PULSE) / 1000.0F), 6, 2, consumption_total_str);
         dtostrf(consumption_current, 4, 0, consumption_current_str);
         time_since_last_pulse = millis();
         pulse_triggered = false;
+        yield();
     }
     
     digitalWrite(DEBUG_LED, millis() < deadline ? HIGH : LOW);
-    //  Particle.delay(millis() - deadline);
+    yield();
+    delay(deadline - millis());
   }
 }
 

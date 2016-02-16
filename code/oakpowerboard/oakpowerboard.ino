@@ -11,18 +11,10 @@
 #include "roboto_thin_20.h"
 #include "images.h"
 
-
 #include "eepromanything.h"
 
 #define PULSES_PER_KWH 375
 #define WH_PER_PULSE (1000.0F / PULSES_PER_KWH)
-
-struct config_t
-{
-  int state;
-  float consumption_total;
-  int pulse_count_current_kwh;
-} storage;
 
 #define BTN_1 9
 #define BTN_2 8
@@ -33,9 +25,17 @@ struct config_t
 
 #define EEPROM_READ_ADDR 0
 
+struct config_t
+{
+  int state;
+  double consumption_total;
+  int pulse_count_current_kwh;
+} storage;
+
+double particle_total_kwh = 0;
 char consumption_total_str[10] = "00000.00";
 
-float consumption_current = 0.0F;
+double particle_consumption_current = 0;
 char consumption_current_str[6] = "Wait";
 
 long time_since_last_pulse = millis();
@@ -63,63 +63,40 @@ bool (*overlays[])(SSD1306 *display, SSD1306UiState* state) = {
 };
 
 bool isConnected = false;
-
 bool b1_pressed = false;
 bool b2_pressed = false;
 bool b3_pressed = false;
 bool b4_pressed = false;
 bool pulse_triggered = false;
 
-void toggle_b1() {
-  b1_pressed = true;
-}
-
-void toggle_b2() {
-  b2_pressed = true;
-}
-
-void toggle_b3() {
-  b3_pressed = true;
-}
-
-void toggle_b4() {
-  b4_pressed = true;
-}
-
-void trigger_pulse() {
-  pulse_triggered = true;
-}
+void toggle_b1() { b1_pressed = true; }
+void toggle_b2() { b2_pressed = true; }
+void toggle_b3() { b3_pressed = true; }
+void toggle_b4() { b4_pressed = true; }
+void trigger_pulse() { pulse_triggered = true; }
 
 void setup() {
+  Particle.variable("total", particle_total_kwh);
+  Particle.variable("current", particle_consumption_current);
   EEPROM_readAnything(EEPROM_READ_ADDR, storage);
-  if(storage.state != 0xF7) {
-    storage.state = 0xF7;
-    storage.consumption_total = 56712.0f;
-    storage.pulse_count_current_kwh = 0;
+  if(storage.state != 0xFA) {
+    storage.state = 0xFA;
+    storage.consumption_total = 56713.0f;
+    storage.pulse_count_current_kwh = 370;
     EEPROM_writeAnything(EEPROM_READ_ADDR, storage);
   }
+  
   dtostrf(storage.consumption_total, 6, 2, consumption_total_str);
-
+  
   ui.setTargetFPS(30);
   ui.setActiveSymbole(activeSymbole);
   ui.setInactiveSymbole(inactiveSymbole);
   ui.setIndicatorPosition(TOP);
-
-  // Defines where the first frame is located in the bar.
   ui.setIndicatorDirection(LEFT_RIGHT);
-
-  // You can change the transition that is used
-  // SLIDE_LEFT, SLIDE_RIGHT, SLIDE_TOP, SLIDE_DOWN
   ui.setFrameAnimation(SLIDE_LEFT);
-
   ui.setTimePerFrame(7000);
-  // Add frames
   ui.setFrames(frames, 2);
-
-  // Add overlays
   ui.setOverlays(overlays, 1);
-
-  // Inital UI takes care of initalising the display too.
   ui.init();
 
   display.flipScreenVertically();
@@ -173,9 +150,10 @@ void loop() {
           EEPROM_writeAnything(EEPROM_READ_ADDR, storage);
         }
         yield();
-        consumption_current = get_consumption_from_time_since_last_pulse(time_since_last_pulse);
-        dtostrf(storage.consumption_total + ((((float)storage.pulse_count_current_kwh) * WH_PER_PULSE) / 1000.0F), 6, 2, consumption_total_str);
-        dtostrf(consumption_current, 4, 0, consumption_current_str);
+        particle_consumption_current = get_consumption_from_time_since_last_pulse(time_since_last_pulse);
+        particle_total_kwh = storage.consumption_total + ((((float)storage.pulse_count_current_kwh) * WH_PER_PULSE) / 1000.0F);
+        dtostrf(particle_total_kwh, 6, 2, consumption_total_str);
+        dtostrf(particle_consumption_current, 4, 0, consumption_current_str);
         time_since_last_pulse = millis();
         pulse_triggered = false;
         yield();
@@ -218,7 +196,7 @@ bool msOverlay(SSD1306 *display, SSD1306UiState* state) {
 float get_consumption_from_time_since_last_pulse(long timeSinceLastPulse) {
   long time = millis();
   long dsecs = (time - timeSinceLastPulse) / 100;
-  if(dsecs < 5) { //5 dsecs = 0.5 sec: the highest supported interval for this sketch.
+  if(dsecs < 4) { //4 dsecs = 0.4 sec: the highest supported interval for this sketch.
     time_since_last_pulse = time;
     return 0.0F;
   }

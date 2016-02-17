@@ -23,6 +23,8 @@
 #define PULSE_PIN A0
 #define DEBUG_LED 10
 
+//#define DEBUG
+
 #define EEPROM_READ_ADDR 0
 
 struct config_t
@@ -105,7 +107,9 @@ void setup() {
   // initialize the digital pin as an output.
   pinMode(1, OUTPUT); //LED on Model A   
   attachInterrupt(digitalPinToInterrupt(PULSE_PIN), trigger_pulse, FALLING);
+#ifdef DEBUG
   pinMode(DEBUG_LED, OUTPUT);//Debugging LED
+#endif
   attachInterrupt(digitalPinToInterrupt(BTN_1), toggle_b1, FALLING);
   attachInterrupt(digitalPinToInterrupt(BTN_2), toggle_b2, FALLING);
   attachInterrupt(digitalPinToInterrupt(BTN_3), toggle_b3, FALLING);
@@ -157,9 +161,10 @@ void loop() {
         time_since_last_pulse = millis();
         pulse_triggered = false;
         yield();
-    }
-    
+    }*/
+#ifdef DEBUG
     digitalWrite(DEBUG_LED, millis() < deadline ? HIGH : LOW);
+#endif
     yield();
     delay(deadline - millis());
   }

@@ -159,7 +159,7 @@ void loop() {
       yield();
     }
     
-    if(b4_pressed = true) {
+    if(b4_pressed == true) {
       //handle b4
       ui.setFrames(frames, 2);
       ui.enableAutoTransition();

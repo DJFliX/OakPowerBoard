@@ -40,11 +40,16 @@ char consumption_total_str[10] = "00000.00";
 double particle_consumption_current = 0;
 char consumption_current_str[6] = "Wait";
 
+char analog_value[6] = "00000";
+
 long time_since_last_pulse = millis();
 
 // Initialize the oled display for address 0x3c
 SSD1306   display(0x3c, 0, 2);
 SSD1306Ui ui     ( &display );
+
+int analogCounter = 0;
+int analogValue = 0;
 
 /* Drawing Resources */
 bool draw_totalcount_frame(SSD1306 *display, SSD1306UiState* state, int x, int y);
@@ -145,6 +150,13 @@ void loop() {
       b4_pressed = false;
       yield();
     }
+
+    analogCounter++;
+    if(analogCounter == 10) {
+      analogValue = analogRead(PULSE_PIN);
+      dtostrf(analogValue, 4, 0, analog_value);
+      analogCounter = 0;
+    }
     
     if(pulse_triggered == true) {
         storage.pulse_count_current_kwh++;
@@ -192,7 +204,7 @@ bool msOverlay(SSD1306 *display, SSD1306UiState* state) {
   //display->drawXbm(32, 0, 8, 8, wifiActive);
   display->setTextAlignment(TEXT_ALIGN_LEFT);
   display->setFont(Roboto_Plain_10);
-  display->drawString(0, 0, String("20:41")); //This should be the current time
+  display->drawString(0, 0, analog_value); //This should be the current time
   //display->setTextAlignment(TEXT_ALIGN_RIGHT);
   //display->drawString(128, 0, String(millis()));
   return true;

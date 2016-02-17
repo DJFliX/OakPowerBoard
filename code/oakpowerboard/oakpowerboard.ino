@@ -121,7 +121,7 @@ void setup() {
   // put your setup code here, to run once:
   // initialize the digital pin as an output.
   pinMode(1, OUTPUT); //LED on Model A   
-  attachInterrupt(digitalPinToInterrupt(PULSE_PIN), trigger_pulse, FALLING);
+  //attachInterrupt(digitalPinToInterrupt(PULSE_PIN), trigger_pulse, FALLING);
 #ifdef DEBUG
   pinMode(DEBUG_LED, OUTPUT);//Debugging LED
 #endif
@@ -174,7 +174,6 @@ void loop() {
       analogCounter = 0;
     }
     
-    if(pulse_triggered == true) {
     /*if(pulse_triggered == true) {
         storage.pulse_count_current_kwh++;
         if(storage.pulse_count_current_kwh == PULSES_PER_KWH) {

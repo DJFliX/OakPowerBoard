@@ -20,7 +20,7 @@
 #define BTN_2 8
 #define BTN_3 7
 #define BTN_4 6
-#define PULSE_PIN 5
+#define PULSE_PIN A0
 #define DEBUG_LED 10
 
 #define EEPROM_READ_ADDR 0

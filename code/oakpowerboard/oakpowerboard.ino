@@ -54,6 +54,7 @@ int analogValue = 0;
 /* Drawing Resources */
 bool draw_totalcount_frame(SSD1306 *display, SSD1306UiState* state, int x, int y);
 bool draw_currentconsumption_frame(SSD1306 *display, SSD1306UiState* state, int x, int y);
+bool draw_menu_frame(SSD1306 *display, SSD1306UiState* state, int x, int y);
 bool msOverlay(SSD1306 *display, SSD1306UiState* state);
 
 float get_consumption_from_time_since_last_pulse(long timeSinceLastPulse);
@@ -64,6 +65,15 @@ bool (*frames[])(SSD1306 *display, SSD1306UiState* state, int x, int y) = {
   draw_totalcount_frame, 
   draw_currentconsumption_frame
 };
+
+// this array keeps function pointers to all frames
+// frames are the single views that slide from right to left
+bool (*others[])(SSD1306 *display, SSD1306UiState* state, int x, int y) = { 
+  draw_menu_frame,
+  draw_currentconsumption_frame
+};
+
+
 
 bool (*overlays[])(SSD1306 *display, SSD1306UiState* state) = { 
   msOverlay 
@@ -128,25 +138,31 @@ void loop() {
   if (remainingTimeBudget > 0) {
     yield();
     if(b1_pressed == true) {
-      ui.nextFrame();
+      //handle b1
+      ui.setFrames(others, 2);
+      ui.disableAutoTransition();
       b1_pressed = false;
       yield();
     }
     
     if(b2_pressed == true) {
-      ui.previousFrame();
+      //handle b2
+      ui.nextFrame();
       b2_pressed = false;
       yield();
     }
     
     if(b3_pressed == true) {
       //handle b3
+      ui.previousFrame();
       b3_pressed = false;
       yield();
     }
     
     if(b4_pressed = true) {
       //handle b4
+      ui.setFrames(frames, 2);
+      ui.enableAutoTransition();
       b4_pressed = false;
       yield();
     }
@@ -159,6 +175,7 @@ void loop() {
     }
     
     if(pulse_triggered == true) {
+    /*if(pulse_triggered == true) {
         storage.pulse_count_current_kwh++;
         if(storage.pulse_count_current_kwh == PULSES_PER_KWH) {
           storage.consumption_total++;
@@ -197,6 +214,13 @@ bool draw_currentconsumption_frame(SSD1306 *display, SSD1306UiState* state, int 
   display->drawString(0 + x, 20, "Current: (W)");
   display->setFont(Roboto_Thin_Plain_20);
   display->drawString(0 + x, 34, consumption_current_str);
+  return false;
+}
+
+bool draw_menu_frame(SSD1306 *display, SSD1306UiState* state, int x, int y) {
+  display->setTextAlignment(TEXT_ALIGN_LEFT);
+  display->setFont(Roboto_Plain_10);
+  display->drawString(0 + x, 20, "MENU: (W)");
   return false;
 }
 

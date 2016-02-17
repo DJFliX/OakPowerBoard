@@ -70,7 +70,7 @@ bool (*frames[])(SSD1306 *display, SSD1306UiState* state, int x, int y) = {
 // frames are the single views that slide from right to left
 bool (*others[])(SSD1306 *display, SSD1306UiState* state, int x, int y) = { 
   draw_menu_frame,
-  draw_currentconsumption_frame
+  draw_calibration_frame
 };
 
 
@@ -220,6 +220,20 @@ bool draw_menu_frame(SSD1306 *display, SSD1306UiState* state, int x, int y) {
   display->setTextAlignment(TEXT_ALIGN_LEFT);
   display->setFont(Roboto_Plain_10);
   display->drawString(0 + x, 20, "MENU: (W)");
+  return false;
+}
+
+bool draw_calibration_frame(SSD1306 *display, SSD1306UiState* state, int x, int y) {
+  display->setTextAlignment(TEXT_ALIGN_LEFT);
+  display->setFont(Roboto_Plain_10);
+  display->drawString(12 + x, 16, "Current: ");
+  display->drawString(12 + x, 28, "High: ");
+  display->drawString(12 + x, 40, "Low: ");
+  display->drawString(16 + x, 52, "S3: Back, S2: Ok");
+  display->setTextAlignment(TEXT_ALIGN_RIGHT);
+  display->drawString(128, 16, analog_value);
+  display->drawString(128, 28, "1024");
+  display->drawString(128, 40, "0");
   return false;
 }
 

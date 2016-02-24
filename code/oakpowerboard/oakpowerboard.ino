@@ -40,16 +40,31 @@ char consumption_total_str[10] = "00000.00";
 double particle_consumption_current = 0;
 char consumption_current_str[6] = "Wait";
 
-char analog_value[6] = "00000";
-
 long time_since_last_pulse = millis();
 
 // Initialize the oled display for address 0x3c
 SSD1306   display(0x3c, 0, 2);
 SSD1306Ui ui     ( &display );
 
-int analogCounter = 0;
-int analogValue = 0;
+struct measurement_values {
+  int counter = 0;
+  int value = 0;
+  int hi = 0;
+  int lo = 1024;
+} analogVal;
+
+struct measurement_strings {
+  char current[5] = "0000";
+  char hi[5] = "0000";
+  char lo[5] = "0000";
+} valStrings;
+
+enum app_state {
+  HOME,
+  CALIBRATE
+};
+
+app_state current_state = HOME;
 
 /* Drawing Resources */
 bool draw_totalcount_frame(SSD1306 *display, SSD1306UiState* state, int x, int y);
@@ -72,8 +87,6 @@ bool (*others[])(SSD1306 *display, SSD1306UiState* state, int x, int y) = {
   draw_menu_frame,
   draw_calibration_frame
 };
-
-
 
 bool (*overlays[])(SSD1306 *display, SSD1306UiState* state) = { 
   msOverlay 
@@ -138,9 +151,19 @@ void loop() {
   if (remainingTimeBudget > 0) {
     yield();
     if(b1_pressed == true) {
+      switch(current_state) {
+        case HOME:
+          ui.setFrames(others, 2);
+          ui.disableAutoTransition();
+          current_state = CALIBRATE;
+          break;
+        case CALIBRATE:
+          ui.setFrames(frames, 2);
+          ui.enableAutoTransition();
+          current_state = HOME;
+          break;
+      }
       //handle b1
-      ui.setFrames(others, 2);
-      ui.disableAutoTransition();
       b1_pressed = false;
       yield();
     }
@@ -161,17 +184,31 @@ void loop() {
     
     if(b4_pressed == true) {
       //handle b4
-      ui.setFrames(frames, 2);
-      ui.enableAutoTransition();
+      switch(current_state) {
+        case CALIBRATE:
+          analogVal.hi = 0;
+          dtostrf(analogVal.hi, 4, 0, valStrings.hi);
+          analogVal.lo = 1024;
+          dtostrf(analogVal.lo, 4, 0, valStrings.lo);
+          break;
+      }
       b4_pressed = false;
       yield();
     }
 
-    analogCounter++;
-    if(analogCounter == 10) {
-      analogValue = analogRead(PULSE_PIN);
-      dtostrf(analogValue, 4, 0, analog_value);
-      analogCounter = 0;
+    analogVal.counter++;
+    if(analogVal.counter == 5) {
+      analogVal.value = analogRead(PULSE_PIN);
+      if(analogVal.value > analogVal.hi) {
+        analogVal.hi = analogVal.value;
+        dtostrf(analogVal.hi, 4, 0, valStrings.hi);
+      }
+      if(analogVal.value < analogVal.lo) {
+        analogVal.lo = analogVal.value;
+        dtostrf(analogVal.lo, 4, 0, valStrings.lo);
+      }
+      dtostrf(analogVal.value, 4, 0, valStrings.current);
+      analogVal.counter = 0;
     }
     
     /*if(pulse_triggered == true) {
@@ -229,11 +266,12 @@ bool draw_calibration_frame(SSD1306 *display, SSD1306UiState* state, int x, int 
   display->drawString(12 + x, 16, "Current: ");
   display->drawString(12 + x, 28, "High: ");
   display->drawString(12 + x, 40, "Low: ");
-  display->drawString(16 + x, 52, "S3: Back, S2: Ok");
+  display->drawString(x, 52, "S4: RST S3: BCK S2: Ok");
   display->setTextAlignment(TEXT_ALIGN_RIGHT);
-  display->drawString(128, 16, analog_value);
-  display->drawString(128, 28, "1024");
-  display->drawString(128, 40, "0");
+  display->drawString(128 + x, 16, valStrings.current);
+  display->drawString(128 + x, 28, valStrings.hi);
+  display->drawString(128 + x, 40, valStrings.lo);
+  display->drawString(128 + x, 52, analogVal.value > ((analogVal.hi + analogVal.lo) / 2) ? "X" : " ");
   return false;
 }
 
@@ -241,7 +279,7 @@ bool msOverlay(SSD1306 *display, SSD1306UiState* state) {
   //display->drawXbm(32, 0, 8, 8, wifiActive);
   display->setTextAlignment(TEXT_ALIGN_LEFT);
   display->setFont(Roboto_Plain_10);
-  display->drawString(0, 0, analog_value); //This should be the current time
+  display->drawString(0, 0, valStrings.current); //This should be the current time
   //display->setTextAlignment(TEXT_ALIGN_RIGHT);
   //display->drawString(128, 0, String(millis()));
   return true;

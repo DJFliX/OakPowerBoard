@@ -116,7 +116,7 @@ function initialize() {
 	dstElement.appendChild(createGlyphButton(3));
 	dstElement.appendChild(createGlyphButton(4));
 	dstElement.appendChild(createKwhForm());
-    getStatus(processStatus());
+    getStatus(processStatus);
 }
 
 initialize();

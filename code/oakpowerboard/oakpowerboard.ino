@@ -101,7 +101,6 @@ bool (*overlays[])(SSD1306 *display, SSD1306UiState* state) = {
 };
 
 ESP8266WebServer server ( 80 );
-char temp[400];
 
 bool isConnected = false;
 bool b1_pressed = false;

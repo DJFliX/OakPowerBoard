@@ -36,7 +36,7 @@ function addButton(button_index) {
     var element = document.createElement("input");
     //Assign different attributes to the element. 
     element.type = 'button';
-    element.class = 'btn btn-info';
+    element.setAttribute('class', 'btn btn-info');
     var span = document.createElement("span");
     span.setAttribute('class', "glyphicon " + buttons[button_index]);
     element.appendChild(span);

@@ -1,9 +1,4 @@
-var buttons = [
-    { name: "Up", glyph: "glyphicon-menu-up"},
-    { name: "Right", glyph: "glyphicon-menu-right"},
-    { name: "Left", glyph: "glyphicon-menu-left"},
-    { name: "Down", glyph: "glyphicon-menu-down"}
-];
+var buttons = ["glyphicon-menu-up", "glyphicon-menu-right", "glyphicon-menu-left", "glyphicon-menu-down"];
 
 function httpGetAsync(theUrl, callback)
 {
@@ -36,14 +31,14 @@ function addCss(id, url) {
     }
 }
 
-function add(button_index) {
+function addButton(button_index) {
     //Create an input type dynamically.   
     var element = document.createElement("input");
     //Assign different attributes to the element. 
     element.type = 'button';
     element.class = 'btn btn-info';
     var span = document.createElement("span");
-    span.class = "glyphicon " +  buttons[button_index].glyph;
+    span.class = "glyphicon " + buttons[button_index];
     element.appendChild(span);
     element.name = 'button' + button_index;  // And the name too?
     element.onclick = function() { // Note this is a function
@@ -54,10 +49,10 @@ function add(button_index) {
 
 function initialize() {
     addCss('bootstrap', '//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css');
-	add(1);
-	add(2);
-	add(3);
-	add(4);
+	addButton(1);
+	addButton(2);
+	addButton(3);
+	addButton(4);
 	document.write('Successfully loaded content from CDN');
 }
 

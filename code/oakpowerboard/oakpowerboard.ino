@@ -119,7 +119,10 @@ void ws_b1();
 void ws_b2();
 void ws_b3();
 void ws_b4();
+void ws_total_kwh();
+void ws_status();
 void handleRoot();
+
 #include "web_handlers.h"
 
 void setup() {
@@ -161,7 +164,8 @@ void setup() {
   server.on ( "/api/b2", ws_b2);
   server.on ( "/api/b3", ws_b3);
   server.on ( "/api/b4", ws_b4);
-  
+  server.on ( "/api/kwht", ws_total_kwh);
+  server.on ( "/api/status", ws_status);
   server.begin();
 }
 

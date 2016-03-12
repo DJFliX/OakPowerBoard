@@ -125,25 +125,11 @@ void toggle_b3() { b3_pressed = true; }
 void toggle_b4() { b4_pressed = true; }
 void trigger_pulse() { pulse_triggered = true; }
 
-void ws_b1() {
-  b1_pressed = true;
-  server.send ( 200, "application/json", json_ok );
-}
-
-void ws_b2() {
-  b1_pressed = true;
-  server.send ( 200, "application/json", json_ok );
-}
-
-void ws_b3() {
-  b1_pressed = true;
-  server.send ( 200, "application/json", json_ok );
-}
-
-void ws_b4() {
-  b1_pressed = true;
-  server.send ( 200, "application/json", json_ok );
-}
+void ws_b1();
+void ws_b2();
+void ws_b3();
+void ws_b4();
+#include "web_handlers.h"
 
 void setup() {
   Particle.variable("total", particle_total_kwh);

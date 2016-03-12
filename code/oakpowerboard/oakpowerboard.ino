@@ -78,6 +78,7 @@ bool draw_totalcount_frame(SSD1306 *display, SSD1306UiState* state, int x, int y
 bool draw_currentconsumption_frame(SSD1306 *display, SSD1306UiState* state, int x, int y);
 bool draw_menu_frame(SSD1306 *display, SSD1306UiState* state, int x, int y);
 bool msOverlay(SSD1306 *display, SSD1306UiState* state);
+#include "disp_frames.h"
 
 float get_consumption_from_time_since_last_pulse(long timeSinceLastPulse);
 
@@ -102,16 +103,6 @@ bool (*overlays[])(SSD1306 *display, SSD1306UiState* state) = {
 ESP8266WebServer server ( 80 );
 char temp[400];
 
-void handleRoot() {
-  char temp[400];
-  int sec = millis() / 1000;
-  int min = sec / 60;
-  int hr = min / 60;
-  //snprintf ( temp, 400, "HELLO WORLD", hr, min % 60, sec % 60 );
-  server.send ( 200, "text/html", bootstrapcdn );
-}
-
-
 bool isConnected = false;
 bool b1_pressed = false;
 bool b2_pressed = false;
@@ -129,6 +120,7 @@ void ws_b1();
 void ws_b2();
 void ws_b3();
 void ws_b4();
+void handleRoot();
 #include "web_handlers.h"
 
 void setup() {
@@ -264,56 +256,6 @@ void loop() {
     if(millis() < deadline) server.handleClient();
     if(millis() < deadline) delay(deadline - millis());
   }
-}
-
-bool draw_totalcount_frame(SSD1306 *display, SSD1306UiState* state, int x, int y) {
-  display->setTextAlignment(TEXT_ALIGN_LEFT);
-  display->setFont(Roboto_Plain_10);
-  display->drawString(0 + x, 20, "Total (kWh):");
-  display->setFont(Roboto_Thin_Plain_20);
-  display->drawString(0 + x, 32, consumption_total_str);
-  return false;
-}
-
-bool draw_currentconsumption_frame(SSD1306 *display, SSD1306UiState* state, int x, int y) {
-  display->setTextAlignment(TEXT_ALIGN_LEFT);
-  display->setFont(Roboto_Plain_10);
-  display->drawString(0 + x, 20, "Current: (W)");
-  display->setFont(Roboto_Thin_Plain_20);
-  display->drawString(0 + x, 34, consumption_current_str);
-  return false;
-}
-
-bool draw_menu_frame(SSD1306 *display, SSD1306UiState* state, int x, int y) {
-  display->setTextAlignment(TEXT_ALIGN_LEFT);
-  display->setFont(Roboto_Plain_10);
-  display->drawString(0 + x, 20, "MENU: (W)");
-  return false;
-}
-
-bool draw_calibration_frame(SSD1306 *display, SSD1306UiState* state, int x, int y) {
-  display->setTextAlignment(TEXT_ALIGN_LEFT);
-  display->setFont(Roboto_Plain_10);
-  display->drawString(12 + x, 16, "Current: ");
-  display->drawString(12 + x, 28, "High: ");
-  display->drawString(12 + x, 40, "Low: ");
-  display->drawString(x, 52, "S4: RST S3: BCK S2: Ok");
-  display->setTextAlignment(TEXT_ALIGN_RIGHT);
-  display->drawString(128 + x, 16, valStrings.current);
-  display->drawString(128 + x, 28, valStrings.hi);
-  display->drawString(128 + x, 40, valStrings.lo);
-  display->drawString(128 + x, 52, analogVal.value > ((analogVal.hi + analogVal.lo) / 2) ? "X" : " ");
-  return false;
-}
-
-bool msOverlay(SSD1306 *display, SSD1306UiState* state) {
-  //display->drawXbm(32, 0, 8, 8, wifiActive);
-  display->setTextAlignment(TEXT_ALIGN_LEFT);
-  display->setFont(Roboto_Plain_10);
-  display->drawString(0, 0, valStrings.current); //This should be the current time
-  //display->setTextAlignment(TEXT_ALIGN_RIGHT);
-  //display->drawString(128, 0, String(millis()));
-  return true;
 }
 
 float get_consumption_from_time_since_last_pulse(long timeSinceLastPulse) {

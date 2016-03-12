@@ -17,3 +17,7 @@ void ws_b4() {
   b4_pressed = true;
   server.send ( 200, "application/json", json_ok );
 }
+
+void handleRoot() {
+  server.send ( 200, "text/html", bootstrapcdn );
+}

@@ -31,7 +31,7 @@ function addCss(id, url) {
     }
 }
 
-function addButton(button_index) {
+function createGlyphButton(button_index) {
     //Create an input type dynamically.   
     var element = document.createElement("button");
     //Assign different attributes to the element. 
@@ -43,16 +43,80 @@ function addButton(button_index) {
     element.onclick = function() { // Note this is a function
         httpGetAsync("api/b" + button_index, button_callback)
     };
-    document.getElementById("bc").appendChild(element);
+    return element;
+}
+
+function createInputGroup(id, contents) {
+	var divElement = document.createElement("div");
+	divElement.setAttribute('class', 'input-group');
+	divElement.setAttribute('id', id);
+	for(var i = 0; i < contents.length; i++) {
+		divElement.appendChild(contents[i]);
+	}
+	return divElement;
+}
+
+function createTextField(id, placeholder, hasAddon) {
+	var inputElement = document.createElement("input");
+	inputElement.setAttribute('type', 'text');
+	inputElement.setAttribute('id', id);
+	inputElement.setAttribute('class', 'form-control');
+	inputElement.setAttribute('placeholder', placeholder);
+	if(hasAddon) inputElement.setAttribute('aria-describedby', id + '-addon');
+	return inputElement;
+}
+
+function createTextFieldAddon(id, contents) {
+	var span = document.createElement("span");
+	span.setAttribute('class', 'input-group-addon');
+	span.setAttribute('id', id);
+	span.textContent = contents;
+    return span;
+}
+
+function createLabel(target_element, content) {
+	var label = document.createElement("label");
+	label.setAttribute('for', target_element);
+	label.textContent = content;
+	return label;
+}
+
+function createKwhForm() {
+	var form = document.createElement("form");
+	var formGroup = document.createElement("div");
+	formGroup.setAttribute("class", "form-group");
+	formGroup.appendChild(createLabel("kwh-input", "KWh preset"));
+
+	var inputGroup = createInputGroup("kwh-input-addon", [
+		createTextField("kwh-input", "12345.00", true), 
+		createTextFieldAddon('kwh-input-addon', 'KWh')
+	]);
+
+	formGroup.appendChild(inputGroup);
+
+	form.appendChild(formGroup);
+	return form;
+}
+
+function getStatus(callback) {
+    httpGetAsync('api/status', callback);
+}
+
+function processStatus(json) {
+    var parsedStatus = JSON.parse(json);
+    console.dir(parsedStatus);
+    document.getElementById('kwh-input').value = json.total;
 }
 
 function initialize() {
-    addCss('bootstrap', '//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css');
-	addButton(1);
-	addButton(2);
-	addButton(3);
-	addButton(4);
-	document.write('Successfully loaded content from CDN');
+    addCss('bootstrap', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css');
+    var dstElement = document.getElementById("bc");
+	dstElement.appendChild(createGlyphButton(1));
+	dstElement.appendChild(createGlyphButton(2));
+	dstElement.appendChild(createGlyphButton(3));
+	dstElement.appendChild(createGlyphButton(4));
+	dstElement.appendChild(createKwhForm());
+    getStatus(processStatus());
 }
 
 initialize();

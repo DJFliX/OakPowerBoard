@@ -19,14 +19,15 @@ const char bootstrap[] PROGMEM = "<html>\
     <title>Bootstrap</title>\
     <script>\
     if (!localStorage.bootstrap) {\
-      localStorage.bootstrap = 'Y29uc29sZS5sb2coJ2hlbGxvIHdvcmxkJyk7'\
+      localStorage.bootstrap = 'Y29uc29sZS5sb2coJ2hlbGxvIHdvcmxkJyk7';\
+      console.log('no bootstrap yet!');\
+    } else {\
+      console.log('bootstrap present!');\
     }\
-    var script = document.createElement('script');\
-    script.src = 'data.text/javascript,' + encodeURI(localStorage.bootstrap);\
-    script.onload = function() {\
-      console.log('hi');\
-    };\
-    document.body.appendChild(script);\
+      var head = document.getElementsByTagName(\"head\")[0];\
+      var js = document.createElement(\"script\");\
+      js.src = 'data:text/javascript;base64,' + localStorage.bootstrap;\
+      head.appendChild(js);\
     </script>\
   </head>\
   <body>\

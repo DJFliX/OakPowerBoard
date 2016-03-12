@@ -1,6 +1,13 @@
 #include <Wire.h>
 #include <EEPROM.h>
 
+#include <ESP8266WiFi.h>
+#include <WiFiClient.h>
+#include <ESP8266WebServer.h>
+#include <ESP8266mDNS.h>
+
+#include "web_content.h"
+
 //https://github.com/squix78/esp8266-oled-ssd1306
 #include "SSD1306.h"
 #include "SSD1306Ui.h"
@@ -92,6 +99,18 @@ bool (*overlays[])(SSD1306 *display, SSD1306UiState* state) = {
   msOverlay 
 };
 
+ESP8266WebServer server ( 80 );
+char temp[400];
+
+void handleRoot() {
+  char temp[400];
+  int sec = millis() / 1000;
+  int min = sec / 60;
+  int hr = min / 60;
+  //snprintf ( temp, 400, "HELLO WORLD", hr, min % 60, sec % 60 );
+  server.send ( 200, "text/html", bootstrap );
+}
+
 bool isConnected = false;
 bool b1_pressed = false;
 bool b2_pressed = false;
@@ -104,6 +123,7 @@ void toggle_b2() { b2_pressed = true; }
 void toggle_b3() { b3_pressed = true; }
 void toggle_b4() { b4_pressed = true; }
 void trigger_pulse() { pulse_triggered = true; }
+
 
 void setup() {
   Particle.variable("total", particle_total_kwh);
@@ -138,6 +158,9 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(BTN_2), toggle_b2, FALLING);
   attachInterrupt(digitalPinToInterrupt(BTN_3), toggle_b3, FALLING);
   attachInterrupt(digitalPinToInterrupt(BTN_4), toggle_b4, FALLING);
+
+  server.on ( "/", handleRoot );
+  server.begin();
 }
 
 void loop() {
@@ -227,6 +250,7 @@ void loop() {
     digitalWrite(DEBUG_LED, millis() < deadline ? HIGH : LOW);
 #endif
     yield();
+    if(millis() < deadline) server.handleClient();
     if(millis() < deadline) delay(deadline - millis());
   }
 }

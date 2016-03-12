@@ -169,57 +169,19 @@ void setup() {
   server.begin();
 }
 
+#include "button_handlers.h"
+
 void loop() {
   int remainingTimeBudget = ui.update();
   long deadline = millis() + remainingTimeBudget;
   
   if (remainingTimeBudget > 0) {
     yield();
-    if(b1_pressed == true) {
-      switch(current_state) {
-        case HOME:
-          ui.setFrames(others, 2);
-          ui.disableAutoTransition();
-          current_state = CALIBRATE;
-          break;
-        case CALIBRATE:
-          ui.setFrames(frames, 2);
-          ui.enableAutoTransition();
-          current_state = HOME;
-          break;
-      }
-      //handle b1
-      b1_pressed = false;
-      yield();
-    }
-    
-    if(b2_pressed == true) {
-      //handle b2
-      ui.nextFrame();
-      b2_pressed = false;
-      yield();
-    }
-    
-    if(b3_pressed == true) {
-      //handle b3
-      ui.previousFrame();
-      b3_pressed = false;
-      yield();
-    }
-    
-    if(b4_pressed == true) {
-      //handle b4
-      switch(current_state) {
-        case CALIBRATE:
-          analogVal.hi = 0;
-          dtostrf(analogVal.hi, 4, 0, valStrings.hi);
-          analogVal.lo = 1024;
-          dtostrf(analogVal.lo, 4, 0, valStrings.lo);
-          break;
-      }
-      b4_pressed = false;
-      yield();
-    }
+    if(b1_pressed == true) b1_pressed = handle_b1();
+    if(b2_pressed == true) b2_pressed = handle_b2();
+    if(b3_pressed == true) b3_pressed = handle_b3();
+    if(b4_pressed == true) b4_pressed = handle_b4();
+    yield();
 
     analogVal.counter++;
     if(analogVal.counter == 5) {

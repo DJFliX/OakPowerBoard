@@ -108,7 +108,7 @@ void handleRoot() {
   int min = sec / 60;
   int hr = min / 60;
   //snprintf ( temp, 400, "HELLO WORLD", hr, min % 60, sec % 60 );
-  server.send ( 200, "text/html", bootstrap );
+  server.send ( 200, "text/html", bootstrapcdn );
 }
 
 bool isConnected = false;

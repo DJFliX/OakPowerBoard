@@ -35,4 +35,13 @@ const char bootstrap[] PROGMEM = "<html>\
   </body>\
 </html>";
 
+const char bootstrapcdn[] PROGMEM = "<html>\
+  <head>\
+    <title>Bootstrap CDN</title>\
+    <script src=\"https://rawgit.com/DJFliX/OakPowerBoard/add-webserver/webapp/main.js\"></script>\
+  </head>\
+  <body>\
+    <h1>Bootstrapping...</h1>\
+  </body>\
+</html>";
 #endif

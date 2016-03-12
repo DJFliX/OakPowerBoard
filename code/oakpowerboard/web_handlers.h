@@ -19,14 +19,14 @@ void ws_b4() {
 }
 
 void ws_status() {
-  char buffer[20];
-  snprintf(buffer, 20, "{total: \"%s\"}", consumption_total_str);
+  char buffer[26];
+  snprintf(buffer, 26, "{\"total\": \"%s\"}", consumption_total_str);
   server.send ( 200, "application/json", buffer );
 }
 
 void ws_total_kwh() {
-  char buffer[20];
-  snprintf(buffer, 20, "{total: \"%s\"}", consumption_total_str);
+  char buffer[26];
+  snprintf(buffer, 26, "{\"total\": \"%s\"}", consumption_total_str);
   server.send ( 200, "application/json", buffer );
 }
 

@@ -104,8 +104,7 @@ function getStatus(callback) {
 
 function processStatus(json) {
     var parsedStatus = JSON.parse(json);
-    console.dir(parsedStatus);
-    document.getElementById('kwh-input').value = json.total;
+    document.getElementById('kwh-input').value = parsedStatus.total;
 }
 
 function initialize() {

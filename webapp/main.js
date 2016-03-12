@@ -38,7 +38,7 @@ function addButton(button_index) {
     element.type = 'button';
     element.class = 'btn btn-info';
     var span = document.createElement("span");
-    span.class = "glyphicon " + buttons[button_index];
+    span.setAttribute('class', "glyphicon " + buttons[button_index]);
     element.appendChild(span);
     element.name = 'button' + button_index;  // And the name too?
     element.onclick = function() { // Note this is a function

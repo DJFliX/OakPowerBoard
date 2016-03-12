@@ -21,7 +21,7 @@
 #define BTN_3 7
 #define BTN_4 6
 #define PULSE_PIN A0
-#define DEBUG_LED 10
+#define DEBUG_LED 1
 
 //#define DEBUG
 
@@ -131,10 +131,6 @@ void setup() {
 
   display.flipScreenVertically();
   
-  // put your setup code here, to run once:
-  // initialize the digital pin as an output.
-  pinMode(1, OUTPUT); //LED on Model A   
-  //attachInterrupt(digitalPinToInterrupt(PULSE_PIN), trigger_pulse, FALLING);
 #ifdef DEBUG
   pinMode(DEBUG_LED, OUTPUT);//Debugging LED
 #endif
@@ -231,7 +227,7 @@ void loop() {
     digitalWrite(DEBUG_LED, millis() < deadline ? HIGH : LOW);
 #endif
     yield();
-    delay(deadline - millis());
+    if(millis() < deadline) delay(deadline - millis());
   }
 }
 

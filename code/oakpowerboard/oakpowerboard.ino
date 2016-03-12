@@ -159,6 +159,8 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(BTN_3), toggle_b3, FALLING);
   attachInterrupt(digitalPinToInterrupt(BTN_4), toggle_b4, FALLING);
 
+  MDNS.begin ( "oakpb" );
+ 
   server.on ( "/", handleRoot );
   server.on ( "/api/b1", ws_b1);
   server.on ( "/api/b2", ws_b2);
@@ -167,6 +169,8 @@ void setup() {
   server.on ( "/api/kwht", ws_total_kwh);
   server.on ( "/api/status", ws_status);
   server.begin();
+
+  MDNS.addService("http", "tcp", 80);
 }
 
 #include "button_handlers.h"

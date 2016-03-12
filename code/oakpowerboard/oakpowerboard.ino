@@ -111,6 +111,7 @@ void handleRoot() {
   server.send ( 200, "text/html", bootstrapcdn );
 }
 
+
 bool isConnected = false;
 bool b1_pressed = false;
 bool b2_pressed = false;
@@ -124,6 +125,25 @@ void toggle_b3() { b3_pressed = true; }
 void toggle_b4() { b4_pressed = true; }
 void trigger_pulse() { pulse_triggered = true; }
 
+void ws_b1() {
+  b1_pressed = true;
+  server.send ( 200, "application/json", json_ok );
+}
+
+void ws_b2() {
+  b1_pressed = true;
+  server.send ( 200, "application/json", json_ok );
+}
+
+void ws_b3() {
+  b1_pressed = true;
+  server.send ( 200, "application/json", json_ok );
+}
+
+void ws_b4() {
+  b1_pressed = true;
+  server.send ( 200, "application/json", json_ok );
+}
 
 void setup() {
   Particle.variable("total", particle_total_kwh);
@@ -160,6 +180,11 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(BTN_4), toggle_b4, FALLING);
 
   server.on ( "/", handleRoot );
+  server.on ( "/api/b1", ws_b1);
+  server.on ( "/api/b2", ws_b2);
+  server.on ( "/api/b3", ws_b3);
+  server.on ( "/api/b4", ws_b4);
+  
   server.begin();
 }
 

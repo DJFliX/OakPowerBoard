@@ -1,6 +1,8 @@
 #ifndef _WEB_CONTENT_H_
 #define _WEB_CONTENT_H_
 
+const char json_ok[] PROGMEM = "{ \"status\": \"OK\" }";
+
 const char web_content_uptime[] PROGMEM = "<html>\
   <head>\
     <title>ESP8266 Demo</title>\
@@ -32,6 +34,7 @@ const char bootstrap[] PROGMEM = "<html>\
   </head>\
   <body>\
     <h1>Bootstrapping...</h1>\
+    <div id=\"bc\"></div>\
   </body>\
 </html>";
 

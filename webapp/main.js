@@ -33,12 +33,11 @@ function addCss(id, url) {
 
 function addButton(button_index) {
     //Create an input type dynamically.   
-    var element = document.createElement("input");
+    var element = document.createElement("button");
     //Assign different attributes to the element. 
-    element.type = 'button';
     element.setAttribute('class', 'btn btn-info');
     var span = document.createElement("span");
-    span.setAttribute('class', "glyphicon " + buttons[button_index]);
+    span.setAttribute('class', "glyphicon " + buttons[button_index - 1]);
     element.appendChild(span);
     element.name = 'button' + button_index;  // And the name too?
     element.onclick = function() { // Note this is a function

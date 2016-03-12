@@ -45,7 +45,7 @@ const char bootstrapcdn[] PROGMEM = "<html>\
   <body>\
     <h1>Bootstrapping...</h1>\
     <div id=\"bc\"></div>\
-    <script src=\"https://rawgit.com/DJFliX/OakPowerBoard/add-webserver/webapp/main.js\"></script>\
+    <script src=\"//rawgit.com/DJFliX/OakPowerBoard/add-webserver/webapp/main.js\"></script>\
   </body>\
 </html>";
 #endif

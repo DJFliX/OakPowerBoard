@@ -21,7 +21,7 @@
 #define BTN_3 7
 #define BTN_4 6
 #define PULSE_PIN A0
-#define DEBUG_LED 10
+#define DEBUG_LED 1
 
 //#define DEBUG
 

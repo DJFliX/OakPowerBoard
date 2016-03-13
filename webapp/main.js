@@ -99,7 +99,9 @@ function createKwhForm() {
 }
 
 function getStatus(callback) {
-    httpGetAsync('api/status', callback);
+	if(!local)
+    	httpGetAsync('api/status', callback);
+    else callback('{"total": "54321.00"}');
 }
 
 function processStatus(json) {
@@ -108,7 +110,7 @@ function processStatus(json) {
 }
 
 function initialize() {
-    addCss('bootstrap', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css');
+    addCss('bootstrap', ((!local) ? '' : 'https:') + '//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css');
     var dstElement = document.getElementById("bc");
 	dstElement.appendChild(createGlyphButton(1));
 	dstElement.appendChild(createGlyphButton(2));

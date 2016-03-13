@@ -104,7 +104,6 @@ bool (*overlays[])(SSD1306 *display, SSD1306UiState* state) = {
 };
 
 ESP8266WebServer server ( 80 );
-HTTPClient http;
 
 bool isConnected = false;
 bool b1_pressed = false;
@@ -129,10 +128,8 @@ void handleRoot();
 
 #include "web_handlers.h"
 
-char unixtimestamp_server[] = "http://tiwtieapp.azurewebsites.net";
-char unixtimestamp_call[] = "/now?format=json";
-
 void setup() {
+  HTTPClient http;
   Particle.variable("total", particle_total_kwh);
   Particle.variable("current", particle_consumption_current);
   EEPROM_readAnything(EEPROM_READ_ADDR, storage);
@@ -179,7 +176,7 @@ void setup() {
 
   MDNS.addService("http", "tcp", 80);
 
-  http.begin(unixtimestamp_server, 80, unixtimestamp_call); //HTTP
+  http.begin(F("http://tiwtieapp.azurewebsites.net"), 80, F("/now?format=json")); //HTTP
   int httpCode = http.GET();
   if(httpCode) {
       // file found at server

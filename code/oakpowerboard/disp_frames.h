@@ -20,6 +20,7 @@ bool draw_menu_frame(SSD1306 *display, SSD1306UiState* state, int x, int y) {
   display->setTextAlignment(TEXT_ALIGN_LEFT);
   display->setFont(Roboto_Plain_10);
   display->drawString(0 + x, 20, "MENU: (W)");
+  display->drawString(0 + x, 32, timestamp_string);
   return false;
 }
 

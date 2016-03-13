@@ -5,6 +5,7 @@
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
+#include <ESP8266HTTPClient.h>
 
 #include "web_content.h"
 
@@ -66,6 +67,8 @@ struct measurement_strings {
   char lo[5] = "0000";
 } valStrings;
 
+char timestamp_string[11] = "1457881715";
+
 enum app_state {
   HOME,
   CALIBRATE
@@ -101,6 +104,7 @@ bool (*overlays[])(SSD1306 *display, SSD1306UiState* state) = {
 };
 
 ESP8266WebServer server ( 80 );
+HTTPClient http;
 
 bool isConnected = false;
 bool b1_pressed = false;
@@ -124,6 +128,9 @@ void ws_status();
 void handleRoot();
 
 #include "web_handlers.h"
+
+char unixtimestamp_server[] = "http://tiwtieapp.azurewebsites.net";
+char unixtimestamp_call[] = "/now?format=json";
 
 void setup() {
   Particle.variable("total", particle_total_kwh);
@@ -171,6 +178,15 @@ void setup() {
   server.begin();
 
   MDNS.addService("http", "tcp", 80);
+
+  http.begin(unixtimestamp_server, 80, unixtimestamp_call); //HTTP
+  int httpCode = http.GET();
+  if(httpCode) {
+      // file found at server
+      if(httpCode == 200) {
+        http.getString().toCharArray(timestamp_string, 11);
+      }
+  }
 }
 
 #include "button_handlers.h"
